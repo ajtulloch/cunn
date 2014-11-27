@@ -25,7 +25,7 @@ static int cunn_Threshold_updateOutput(lua_State *L)
 
   thrust::device_ptr<float> output_data(THCudaTensor_data(output));
   thrust::device_ptr<float> input_data(THCudaTensor_data(input));
-  thrust::transform(input_data, input_data+size, output_data, 
+  thrust::transform(input_data, input_data+size, output_data,
                     thresholdupdateOutput_functor(threshold, val));
 
   THCudaTensor_free(input);
@@ -56,14 +56,16 @@ static int cunn_Threshold_updateGradInput(lua_State *L)
   long size = THCudaTensor_nElement(output);
 
   gradOutput = THCudaTensor_newContiguous(gradOutput);
+  input = THCudaTensor_newContiguous(input);
   THCudaTensor_resizeAs(gradInput, output);
 
   thrust::device_ptr<float> input_data(THCudaTensor_data(input));
   thrust::device_ptr<float> gradOutput_data(THCudaTensor_data(gradOutput));
   thrust::device_ptr<float> gradInput_data(THCudaTensor_data(gradInput));
-  thrust::transform(input_data, input_data+size, gradOutput_data, gradInput_data, 
+  thrust::transform(input_data, input_data+size, gradOutput_data, gradInput_data,
                     thresholdupdateGradInput_functor(threshold, val));
 
+  THCudaTensor_free(input);
   THCudaTensor_free(gradOutput);
   return 1;
 }
@@ -80,4 +82,3 @@ static void cunn_Threshold_init(lua_State *L)
   luaT_registeratname(L, cunn_Threshold__, "nn");
   lua_pop(L,1);
 }
-

@@ -22,7 +22,7 @@ static int cunn_L1Cost_updateOutput(lua_State *L)
   sum = thrust::reduce(input_data, input_data+size, (float) 0, l1cost_functor());
 
   THCudaTensor_free(input);
-
+ 
   lua_pushnumber(L, sum);
   lua_setfield(L, 1, "output");
 

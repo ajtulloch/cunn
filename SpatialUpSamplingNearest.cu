@@ -84,7 +84,7 @@ static int cunn_SpatialUpSamplingNearest_updateOutput(lua_State *L)
   } else {
     d1 = output->size[1];
     d2 = output->size[2];
-    d3 = output->size[3];  
+    d3 = output->size[3];
   }
 
   float *input_data = THCudaTensor_data(input);
@@ -112,9 +112,9 @@ static int cunn_SpatialUpSamplingNearest_updateOutput(lua_State *L)
     printf("error in SpatialUpSamplingNearest.updateOutput: %s\n", cudaGetErrorString(err));
     THError("aborting");
   }
- 
+
   // final cut:
-  THCudaTensor_free(input); 
+  THCudaTensor_free(input);
 
   return 1;
 }
@@ -145,10 +145,10 @@ static int cunn_SpatialUpSamplingNearest_updateGradInput(lua_State *L)
   int scale_factor = luaT_getfieldcheckint(L, 1, "scale_factor");
 
   THCudaTensor_zero(gradInput);
-  
+
   float *gradInput_data = THCudaTensor_data(gradInput);
   float *gradOutput_data = THCudaTensor_data(gradOutput);
- 
+
   long no_elements = 1;
   for(int i = 0; i < gradInput->nDimension; i++){
     no_elements *= gradInput->size[i];
@@ -180,11 +180,11 @@ static int cunn_SpatialUpSamplingNearest_updateGradInput(lua_State *L)
   }
   dim3 blocks(n_xblocks, n_yblocks);
   dim3 threads(nthreads);
- 
+
   // kernel:
-  downscale<<<blocks, threads>>> (gradInput_data, gradOutput_data, no_elements, 
+  downscale<<<blocks, threads>>> (gradInput_data, gradOutput_data, no_elements,
     scale_factor, d1, d2, d3);
- 
+
   // check for errors
   cudaError_t err = cudaGetLastError();
   if (err != cudaSuccess) {
